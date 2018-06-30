@@ -1,12 +1,13 @@
 package summer.laii;
 
-import summer.laii.SymbolTable.Register;
-import summer.laii.SymbolTable.Table;
+import summer.laii.LexicalAnalysis.Preprocessor;
+
+import java.io.File;
 
 public class Main {
 
     public static void main(String[] args) {
-	// write your code here
+	/* write your code here
         Table testTable = new Table();
 
         //Insert data
@@ -38,6 +39,13 @@ public class Main {
             System.out.println(reg.getKey() + "\n" + reg.getLength() + "\n" + reg.getToken());
         else
             System.out.println("Data not found");
+    */
+	    File file = new File("test");
+        Preprocessor preprocessor = new Preprocessor();
+        preprocessor.getFileContent(file);
+        for(String s : preprocessor.getLexemes()) {
+            System.out.println(s);
+        }
     }
 }
 
