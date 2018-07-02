@@ -43,58 +43,65 @@ public class Preprocessor {
     public ArrayList<String> getLexemes() {
         Language language = new Language();
         Character character;
-        String lexeme = "";
+        String lexeme = "", processedString;
         ArrayList<String> lexemes = new ArrayList<>();
-        String[] lines = getProcessedString().split("\n");
-        for(String line : lines) {
-            String[] lineNumberElement = getLineNumber(line);
-            for(int i=Integer.parseInt(lineNumberElement[1]);i<line.length();i++) {
-                character = line.charAt(i);
-                if(character!=' ') {
-                    if(language.getDelimiters().contains(character.toString()) ||
-                       language.getOperators().contains(character.toString())  ||
-                       language.getSpecialElements().contains(character.toString())) {
-                        if(!lexeme.equals("")) {
-                            lexemes.add(lineNumberElement[0]+" "+lexeme);
-                            lexeme="";
-                        }
-                        if(character==':') {
-                            lexeme += character;
-                            i++;
-                            if(i<line.length()) {
-                                if(line.charAt(i)=='=' || line.charAt(i) == '<' ||
-                                   line.charAt(i)=='>' || line.charAt(i) == '*') {
-                                    lexeme += line.charAt(i);
-                                    lexemes.add(lineNumberElement[0]+" "+lexeme);
-                                    lexeme="";
-                                } else { i--; }
+        processedString = getProcessedString();
+        if(!processedString.equals("")) {
+            String[] lines = getProcessedString().split("\n");
+            for (String line : lines) {
+                String[] lineNumberElement = getLineNumber(line);
+                for (int i = Integer.parseInt(lineNumberElement[1]); i < line.length(); i++) {
+                    character = line.charAt(i);
+                    if (character != ' ') {
+                        if (language.getDelimiters().contains(character.toString()) ||
+                                language.getOperators().contains(character.toString()) ||
+                                language.getSpecialElements().contains(character.toString())) {
+                            if (!lexeme.equals("")) {
+                                lexemes.add(lineNumberElement[0] + " " + lexeme);
+                                lexeme = "";
                             }
-                        } else { lexemes.add(lineNumberElement[0]+" "+character); }
-                    } else {
-                        if(character=='"') {
-                            lexeme += character;
-                            i++;
-                            while(i<line.length()) {
-                                if(line.charAt(i)=='"') {
-                                    lexeme += character;
-                                    break;
-                                } else {
-                                    lexeme += line.charAt(i);
-                                }
+                            if (character == ':') {
+                                lexeme += character;
                                 i++;
+                                if (i < line.length()) {
+                                    if (line.charAt(i) == '=' || line.charAt(i) == '<' ||
+                                            line.charAt(i) == '>' || line.charAt(i) == '*') {
+                                        lexeme += line.charAt(i);
+                                        lexemes.add(lineNumberElement[0] + " " + lexeme);
+                                        lexeme = "";
+                                    } else {
+                                        i--;
+                                    }
+                                }
+                            } else {
+                                lexemes.add(lineNumberElement[0] + " " + character);
                             }
-                            lexemes.add(lineNumberElement[0]+" "+lexeme);
-                            lexeme="";
-                        } else lexeme += character;
+                        } else {
+                            if (character == '"') {
+                                lexeme += character;
+                                i++;
+                                while (i < line.length()) {
+                                    if (line.charAt(i) == '"') {
+                                        lexeme += character;
+                                        break;
+                                    } else {
+                                        lexeme += line.charAt(i);
+                                    }
+                                    i++;
+                                }
+                                lexemes.add(lineNumberElement[0] + " " + lexeme);
+                                lexeme = "";
+                            } else lexeme += character;
+                        }
+                    } else if (!lexeme.equals("")) {
+                        lexemes.add(lineNumberElement[0] + " " + lexeme);
+                        lexeme = "";
                     }
-                } else if(!lexeme.equals("")) {
-                    lexemes.add(lineNumberElement[0]+" "+lexeme);
-                    lexeme="";
                 }
-            }
-            if(!lexeme.equals("")) {
-                lexemes.add(lineNumberElement[0]+" "+lexeme);
-                lexeme="";
+                if (!lexeme.equals("")) {
+                    lexemes.add(lineNumberElement[0] + " " + lexeme);
+                    lexeme = "";
+                }
             }
         }
         return lexemes;
