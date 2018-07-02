@@ -1,18 +1,34 @@
 package summer.laii.SymbolTable;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
 public class Table {
-    private RandomAccessFile symbolTable;
-    private String filepath = "symbol_table";
+    private RandomAccessFile symbolTable, indexFile;
+    private String sybolTableFilePath = "symbol_table", indexFilePath = "indexes";
     private HashTable hashTable;
+
+    //Tokens categories
+    public static final String RESERVEDWORD = "PR";
+    public static final String OPERATOR = "OP";
+    public static final String DIGIT = "DI";
+    public static final String DELIMITER = "DE";
+    public static final String IDENTIFIER = "ID";
+    public static final String STRING = "CA";
 
     public Table() {
         try {
-            symbolTable = new RandomAccessFile(filepath, "rw");
-        } catch (FileNotFoundException e) { e.printStackTrace(); }
+            File table = new File(sybolTableFilePath);
+            File index = new File(indexFilePath);
+            table.delete();
+            table.createNewFile();
+            index.delete();
+            index.createNewFile();
+            symbolTable = new RandomAccessFile(table, "rw");
+            indexFile = new RandomAccessFile(index, "rw");
+        } catch (IOException e) { e.printStackTrace(); }
         hashTable = new HashTable();
     }
 
@@ -23,6 +39,7 @@ public class Table {
     public void insertData(Register register) {
         long index = hashTable.getHash(register.getToken());
         try {
+            indexFile.writeLong(index);
             symbolTable.seek(index*Register.reg_long);
             symbolTable.writeLong(index);
             symbolTable.writeChars(register.getToken());
@@ -54,6 +71,23 @@ public class Table {
         if(reg.getToken().trim().equals(""))
             reg = null; //Data not found
         return reg;
+    }
+
+    public String readDataFromTable() {
+        String dataTable = "";
+        try {
+            indexFile.seek(0);
+            while (indexFile.getFilePointer() < indexFile.length()) {
+                symbolTable.seek(indexFile.readLong()*Register.reg_long);
+                dataTable += String.format("%d", symbolTable.readLong());
+                dataTable += String.format("%6s", readString(25).trim());
+                dataTable += readString(10).trim() + "\t";
+                dataTable += symbolTable.readInt() + "\t";
+                dataTable += readString(50).trim() + "\t";
+                dataTable += readString(2).trim() + "\t \n";
+            }
+        } catch (IOException e) { e.printStackTrace(); }
+        return dataTable;
     }
 
     /** Retrieve string from a element of a register

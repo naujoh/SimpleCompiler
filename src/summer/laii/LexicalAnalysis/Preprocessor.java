@@ -58,6 +58,19 @@ public class Preprocessor {
                             lexemes.add(lineNumberElement[0]+" "+lexeme);
                             lexeme="";
                         }
+                        if(character==':') {
+                            lexeme += character;
+                            i++;
+                            if(i<line.length()) {
+                                if(line.charAt(i)=='=' || line.charAt(i) == '<' ||
+                                   line.charAt(i)=='>' || line.charAt(i) == '*') {
+                                    lexeme += line.charAt(i);
+                                    lexemes.add(lineNumberElement[0]+" "+lexeme);
+                                    lexeme="";
+                                } else { i--; }
+                            }
+                        } else { lexemes.add(lineNumberElement[0]+" "+character); }
+                    } else {
                         if(character=='"') {
                             lexeme += character;
                             i++;
@@ -72,19 +85,8 @@ public class Preprocessor {
                             }
                             lexemes.add(lineNumberElement[0]+" "+lexeme);
                             lexeme="";
-                        } else if(character==':') {
-                            lexeme += character;
-                            i++;
-                            if(i<line.length()) {
-                                if(line.charAt(i)=='=' || line.charAt(i) == '<' ||
-                                   line.charAt(i)=='>' || line.charAt(i) == '*') {
-                                    lexeme += line.charAt(i);
-                                    lexemes.add(lineNumberElement[0]+" "+lexeme);
-                                    lexeme="";
-                                } else { i--; }
-                            }
-                        } else { lexemes.add(lineNumberElement[0]+" "+character); }
-                    } else { lexeme += character; }
+                        } else lexeme += character;
+                    }
                 } else if(!lexeme.equals("")) {
                     lexemes.add(lineNumberElement[0]+" "+lexeme);
                     lexeme="";
@@ -160,5 +162,9 @@ public class Preprocessor {
             lineWithOutComment += line.charAt(i);
         }
         return lineWithOutComment;
+    }
+
+    public void setFileContent (String data) {
+        this.fileContent = data;
     }
 }

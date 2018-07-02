@@ -9,68 +9,89 @@ import java.util.ArrayList;
 public class LexicalAnalyzer {
     private Table symbolTable;
     private Automaton automaton;
-
-    //Tokens categories
-    private static final String RESERVEDWORD = "PR";
-    private static final String OPERATOR = "OP";
-    private static final String DIGIT = "DI";
-    private static final String DELIMITER = "DE";
-    private static final String IDENTIFIER = "ID";
-    private static final String STRING = "CA";
+    private ArrayList<String> lexicalErrors;
 
     public LexicalAnalyzer() {
         automaton = new Automaton(true);
         symbolTable = new Table();
+        lexicalErrors = new ArrayList<>();
     }
 
-    public void clasifyLexemes(ArrayList<String> lexemes) {
+    public void classifyLexemes(ArrayList<String> lexemes) {
         Register tableRegister;
         Language language = new Language();
         for (String lexeme : lexemes) {
+            String lexWithOutLineNumber= removeLineNumberFromLexeme(lexeme);
             //1. Verify if the lexeme belongs to some element defined in the language
             tableRegister = new Register();
-            if(language.getReserved_words().contains(lexeme)) {
-                tableRegister.setToken(lexeme);
-                tableRegister.setType("");
-                tableRegister.setLength(0);
-                tableRegister.setValue("");
-                tableRegister.setCategory(RESERVEDWORD);
+            tableRegister.setType("");
+            tableRegister.setLength(0);
+            tableRegister.setValue("");
+            if(language.getReserved_words().contains(lexWithOutLineNumber)) {
+                tableRegister.setToken(lexWithOutLineNumber);
+                tableRegister.setCategory(Table.RESERVEDWORD);
                 symbolTable.insertData(tableRegister);
-            } else if (language.getDelimiters().contains(lexeme)) {
-                tableRegister.setToken(lexeme);
-                tableRegister.setType("");
-                tableRegister.setLength(0);
-                tableRegister.setValue("");
-                tableRegister.setCategory(DELIMITER);
+            } else if (language.getDelimiters().contains(lexWithOutLineNumber)) {
+                tableRegister.setToken(lexWithOutLineNumber);
+                tableRegister.setCategory(Table.DELIMITER);
                 symbolTable.insertData(tableRegister);
-            } else if (language.getOperators().contains(lexeme)) {
-                tableRegister.setToken(lexeme);
-                tableRegister.setType("");
-                tableRegister.setLength(0);
-                tableRegister.setValue("");
-                tableRegister.setCategory(OPERATOR);
-                symbolTable.insertData(tableRegister);
+            } else if (language.getOperators().contains(lexWithOutLineNumber)) {
+                tableRegister.setToken(lexWithOutLineNumber);
+                tableRegister.setCategory(Table.OPERATOR);
                 symbolTable.insertData(tableRegister);
             }
             //2. If not then verify if the lexeme could be recognized by the automatons
             else {
-                int sourceState = 0, nextState, lexemePointer;
-                Character pointerValue;
-                lexemePointer = readLineNumber(lexeme);
-                while(lexemePointer<lexeme.length()) {
-                    pointerValue = lexeme.charAt(lexemePointer);
-                    nextState = automaton.getNextState(sourceState, pointerValue, automaton.digitsAutomaton);
-                }
+                tableRegister = automaton.recognizeLexeme(lexWithOutLineNumber);
+                if(tableRegister==null) {
+                    if(!checkIfIsAString(lexWithOutLineNumber, getLineNumberOfLexeme(lexeme)))
+                        lexicalErrors.add (
+                            String.format("Error lexico, el elemento %s en la linea %s no pudo ser reconocido",
+                            lexWithOutLineNumber, getLineNumberOfLexeme(lexeme)));
+                } else { symbolTable.insertData(tableRegister); }
             }
         }
+
     }
 
-    /** Move the pointer of the lexeme after the line number
-     *
-     * @param lexeme
-     * @return an integer that represents pointer position
-     */
-    private int readLineNumber(String lexeme) {
+    private boolean checkIfIsAString(String lexeme, String lineNumber) {
+        boolean isAString = false;
+        if(lexeme.charAt(0)=='"') {
+            String errorLexeme="", lexemeWithOutError="";
+            int pointer=0;
+            isAString = true;
+            for(int i=0; i<lexeme.length(); i++) {
+                if(lexeme.charAt(i)==' ') {
+                    pointer=i+1;
+                    break;
+                } else errorLexeme+=lexeme.charAt(i);
+            }
+            lexicalErrors.add(
+                String.format("Error lexico, el elemento %s en la linea %s no pudo ser reconocido",
+                               errorLexeme, lineNumber));
+            if(pointer!=0) {
+                for (int i = pointer; i < lexeme.length(); i++) {
+                    lexemeWithOutError += lexeme.charAt(i);
+                }
+                Preprocessor p = new Preprocessor();
+                p.setFileContent(lexemeWithOutError);
+                ArrayList<String> lexemesOfLexeme = p.getLexemes();
+                classifyLexemes(lexemesOfLexeme);
+            }
+        }
+        return isAString;
+    }
+
+    private String getLineNumberOfLexeme(String lexeme) {
+        String lineNumber="";
+        for(int i=0; i<lexeme.length();i++) {
+            if(lexeme.charAt(i) == ' ') { break; } else { lineNumber+=lexeme.charAt(i); }
+        }
+        return lineNumber;
+    }
+
+    private String removeLineNumberFromLexeme(String lexeme) {
+        String lexemeWithOutLineNumber="";
         int pointer;
         for(pointer=0; pointer<lexeme.length(); pointer++) {
             if(lexeme.charAt(pointer)==' ') {
@@ -78,6 +99,18 @@ public class LexicalAnalyzer {
                 break;
             }
         }
-        return pointer;
+        for(int i=pointer; i<lexeme.length(); i++) { lexemeWithOutLineNumber+=lexeme.charAt(i); }
+        return lexemeWithOutLineNumber;
+    }
+
+    public void printData() {
+        System.out.println(symbolTable.readDataFromTable());
+        for(String s : lexicalErrors) {
+            System.out.println(s);
+        }
+    }
+
+    public ArrayList<String> getLexicalErrors() {
+        return lexicalErrors;
     }
 }

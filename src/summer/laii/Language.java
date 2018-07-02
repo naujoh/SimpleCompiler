@@ -39,8 +39,8 @@ public class Language {
         reserved_words.add("and");
         reserved_words.add("or");
         reserved_words.add("not");
-        reserved_words.add("open");
-        reserved_words.add("close");
+        reserved_words.add("open>");
+        reserved_words.add("<close");
     }
 
     private void setDelimiters() {
@@ -53,7 +53,7 @@ public class Language {
         delimiters.add(";");
         delimiters.add(",");
         delimiters.add(":v");
-        delimiters.add("\"");
+        //delimiters.add("\"");
     }
 
     private void setOperators() {
