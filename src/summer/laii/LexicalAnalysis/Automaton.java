@@ -94,9 +94,9 @@ public class Automaton {
 
     public int getNextState(int currentState, char lexemeChar, ArrayList<Automaton> automaton) {
         int nextState = -1; //indicates error state
-        for(Automaton a : automaton) {
-            if(currentState==a.)
-        }
+        //for(Automaton a : automaton) {
+        //    if(currentState==a.)
+        //}
         return 0;
     }
 }

@@ -10,6 +10,8 @@ public class Register {
 
     public static int reg_long = Long.BYTES + 89*Character.BYTES + Integer.BYTES;
 
+    public Register() { }
+
     public long getKey() {
         return key;
     }
