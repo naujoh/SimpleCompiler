@@ -1,9 +1,12 @@
 package summer.laii;
 
+import summer.laii.GUI.GUI;
 import summer.laii.LexicalAnalysis.LexicalAnalyzer;
 import summer.laii.LexicalAnalysis.Preprocessor;
 
 import java.io.File;
+
+import static javax.swing.JFrame.EXIT_ON_CLOSE;
 
 public class Main {
 
@@ -41,7 +44,7 @@ public class Main {
         else
             System.out.println("Data not found");
     */
-	    File file = new File("test");
+	    /*File file = new File("test");
         Preprocessor preprocessor = new Preprocessor();
         LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer();
         preprocessor.getFileContent(file);
@@ -50,6 +53,8 @@ public class Main {
         /*for(String s : preprocessor.getLexemes()) {
             System.out.println(s);
         }*/
+        GUI gui=new GUI();
+        gui.setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 }
 

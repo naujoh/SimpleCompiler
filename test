@@ -1,0 +1,12 @@
+open>
+    :vEsto es un comentario
+    int x=8;
+    int y=90;
+    if(x:>7) {
+        x = x+98.834;
+        :v"Esto es una "dsds{} cadena"
+    }
+    while(x<y) {
+        str a = "Hola mundo";
+    }
+<close

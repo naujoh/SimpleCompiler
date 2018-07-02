@@ -20,6 +20,7 @@ public class LexicalAnalyzer {
     public void classifyLexemes(ArrayList<String> lexemes) {
         Register tableRegister;
         Language language = new Language();
+        String previusLexeme="";
         for (String lexeme : lexemes) {
             String lexWithOutLineNumber= removeLineNumberFromLexeme(lexeme);
             //1. Verify if the lexeme belongs to some element defined in the language
@@ -48,10 +49,30 @@ public class LexicalAnalyzer {
                         lexicalErrors.add (
                             String.format("Error lexico, el elemento %s en la linea %s no pudo ser reconocido",
                             lexWithOutLineNumber, getLineNumberOfLexeme(lexeme)));
-                } else { symbolTable.insertData(tableRegister); }
+                } else {
+                    if(tableRegister.getCategory().equals("ID")) {
+                      switch (previusLexeme) {
+                          case "int":
+                              tableRegister.setType("integer");
+                              break;
+                          case "flt":
+                              tableRegister.setType("float");
+                              break;
+                          case "str":
+                              tableRegister.setType("string");
+                              break;
+                          case "bln":
+                              tableRegister.setType("boolean");
+                              break;
+                          default:
+                              break;
+                      }
+                    }
+                    symbolTable.insertData(tableRegister);
+                }
             }
+            previusLexeme = lexWithOutLineNumber;
         }
-
     }
 
     private boolean checkIfIsAString(String lexeme, String lineNumber) {
@@ -103,14 +124,15 @@ public class LexicalAnalyzer {
         return lexemeWithOutLineNumber;
     }
 
-    public void printData() {
-        System.out.println(symbolTable.readDataFromTable());
-        for(String s : lexicalErrors) {
-            System.out.println(s);
-        }
+    public Table getSymbolTable() {
+        return symbolTable;
     }
 
-    public ArrayList<String> getLexicalErrors() {
-        return lexicalErrors;
+    public String getErrorsFound() {
+        String errors = "";
+        for(String s : lexicalErrors) {
+            errors+=s+"\n";
+        }
+        return errors;
     }
 }

@@ -11,14 +11,11 @@ package summer.laii.GUI;
  */
 
 import java.awt.BorderLayout;
-import java.awt.Desktop;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -31,11 +28,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+
+import summer.laii.LexicalAnalysis.LexicalAnalyzer;
 import summer.laii.LexicalAnalysis.Preprocessor;
 
 public class GUI extends JFrame implements KeyListener, ActionListener{
 
-    Preprocessor archivo1=new Preprocessor();
+    Preprocessor preprocessor =new Preprocessor();
     JMenuBar menu;
     JMenu archivo, analisis;
     JMenuItem nuevo, abrir, guardar, salir, lexico, sintactico, semantico;
@@ -64,18 +63,14 @@ public class GUI extends JFrame implements KeyListener, ActionListener{
     }
     
     /**
-     *  MÉTODO QUE INSTANCIA LOS ELEMENTOS QUE CONFORMARÁN LA BARRA DE MENU
+     *  Instancia los elementos de la barra de menu
      */
     public void setMenu(){
         menu=new JMenuBar();
-        /**
-         * COMPONENTES DE LA BARRA DE MENU
-         */
+        //Componentes de la barra de menu
         archivo=new JMenu("Archivo");
         analisis=new JMenu("Análisis");
-        /**
-         * ITEMS - MENU ARCHIVO
-         */
+        //Items - menu archivo
         nuevo=new JMenuItem("Nuevo", new ImageIcon("Nuevo.png"));
         nuevo.addActionListener(this);
         abrir=new JMenuItem("Abrir", new ImageIcon("Abrir.png"));
@@ -89,9 +84,7 @@ public class GUI extends JFrame implements KeyListener, ActionListener{
         archivo.add(abrir);
         archivo.add(guardar);
         archivo.add(salir);
-        /**
-         * ITEMS - MENU ANÁLISIS
-         */
+        //Items menu analisis
         lexico=new JMenuItem("Léxico");
         lexico.addActionListener(this);
         sintactico=new JMenuItem("Sintáctico");
@@ -100,31 +93,22 @@ public class GUI extends JFrame implements KeyListener, ActionListener{
         semantico=new JMenuItem("Semántico");
         semantico.addActionListener(this);
         semantico.setEnabled(false);
-        
         analisis.add(lexico);
         analisis.add(sintactico);
         analisis.add(semantico);
-        
-        /**
-         * AÑADIMOS LOS COMPONENTES A LA BARRA DE MENU
-         */
+        //Añadir componentes a la barra de menu
         menu.add(archivo);
         menu.add(analisis);
     }
     
     /**
-     *  MÉTODO QUE INSTANCIA LOS ELEMENTOS QUE CONFORMARÁN El PANEL PRINCIPAL
+     * Intanciar los elementos que conforman el panel principal
      */
     public void setPanelPrincipal(){
-        /**
-         * INSTANCIA DE LOS PANELES
-         */
-        pPrincipal=new JPanel();
+                pPrincipal=new JPanel();
         pCodigo=new JPanel();
         pSalida=new JPanel();
-        /**
-         * INSTANCIA DE LOS TEXTAREA Y EL SRCOLLPANE
-         */
+
         taNumero=new JTextArea(30, 3);
         taNumero.append(numeroLinea+"");
         taNumero.setEditable(false);
@@ -134,9 +118,7 @@ public class GUI extends JFrame implements KeyListener, ActionListener{
         taSalida.setEditable(false);
         spCodigo=new JScrollPane(pCodigo);
         spErrores=new JScrollPane(pSalida);
-        /**
-         * SE AGREGAN LOS COMPONENTES AL PANEL PRINCIPAL
-         */
+        //Se agregan los componentes al panel principal
         pCodigo.add(taNumero);
         pCodigo.add(taLinea);
         pSalida.add(taSalida);
@@ -146,7 +128,7 @@ public class GUI extends JFrame implements KeyListener, ActionListener{
     }
     
     /**
-     *  MÉTODO QUE INSTANCIA LOS ELEMENTOS QUE CONFORMARÁN El PANEL AUXILIAR
+     * Instancia los elementos que conforman el panel auxiliar
      */    
     public void setPanelAuxiliar(){
         /**
@@ -191,7 +173,7 @@ public class GUI extends JFrame implements KeyListener, ActionListener{
                     "Nombre de archivo inválido", JOptionPane.ERROR_MESSAGE );
             System.exit(1);
         }
-        taLinea.setText(archivo1.getFileContent(file));
+        taLinea.setText(preprocessor.getFileContent(file));
         contarFilas();
     }
     
@@ -299,7 +281,9 @@ public class GUI extends JFrame implements KeyListener, ActionListener{
          */
         if(command.equals("Abrir")){
             if(cambios==true){
-                accion=JOptionPane.showOptionDialog(null,"\n        El archivo ha sido modificado \n ¿Desea guardar el archivo antes de salir? \n\n", "Archivo",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE,null,new Object[] {"Si","No"},"No");
+                accion=JOptionPane.showOptionDialog(null,
+                        "\nEl archivo ha sido modificado \n ¿Desea guardar el archivo antes de salir? \n\n", "Archivo",
+                        JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE,null,new Object[] {"Si","No"},"No");
                 if(accion==1){
                     abrirArchivo();
                 }else{
@@ -321,7 +305,26 @@ public class GUI extends JFrame implements KeyListener, ActionListener{
          * INSTRUCCIONES CUANDO SE SELECCIONA LA OPCIÓN "LÉXICO"
          */
         if(command.equals("Léxico")){
-            
+            taMostrar.setText("");
+            textoAuxiliar="";
+            remove(pAuxiliar);
+            preprocessor.setFileContent(taLinea.getText());
+            listaLexemas= preprocessor.getLexemes();
+            //Pasar la lista de lexemas al analisis lexico
+            LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer();
+            lexicalAnalyzer.classifyLexemes(listaLexemas);
+            textoAuxiliar = lexicalAnalyzer.getSymbolTable().readDataFromTable();
+            taSalida.setText(lexicalAnalyzer.getErrorsFound());
+            add(pAuxiliar,BorderLayout.EAST);
+            String algo=taLinea.getText();
+            taLinea.setText("");
+            taNumero.setText("");
+            validate();
+            repaint();
+            pack();
+            taLinea.setText(algo);
+            contarFilas();
+            taMostrar.setText(textoAuxiliar);
         }
         /**
          * INSTRUCCIONES CUANDO SE SELECCIONA LA OPCIÓN "SINTÁCTICO"
@@ -342,13 +345,4 @@ public class GUI extends JFrame implements KeyListener, ActionListener{
             cerrarPanelAuxiliar();
         }
     }
-    
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        GUI gui=new GUI();
-        gui.setDefaultCloseOperation(EXIT_ON_CLOSE);
-    }
-    
 }

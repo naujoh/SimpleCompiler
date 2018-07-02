@@ -167,4 +167,7 @@ public class Preprocessor {
     public void setFileContent (String data) {
         this.fileContent = data;
     }
+    public void fileContent(String fileContent) {
+        this.fileContent=fileContent;
+    }
 }
