@@ -8,7 +8,7 @@ public class Register {
     private String value; //char[50] = 100 bytes
     private String category; //char[2] = 4 bytes
 
-    public static int reg_long = Long.BYTES + 89*Character.BYTES + Integer.BYTES;
+    public static int reg_long = Long.BYTES + 87*Character.BYTES + Integer.BYTES;
 
     public Register() { }
 

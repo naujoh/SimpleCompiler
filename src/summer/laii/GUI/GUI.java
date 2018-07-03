@@ -48,7 +48,7 @@ public class GUI extends JFrame implements KeyListener, ActionListener{
     String textoAuxiliar;
     int numeroLinea=1, accion;
     boolean cambios=false;
-        
+
     public GUI(){
         setMenu();
         setPanelPrincipal();

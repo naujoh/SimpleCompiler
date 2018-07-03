@@ -15,12 +15,14 @@ public class LexicalAnalyzer {
         automaton = new Automaton(true);
         symbolTable = new Table();
         lexicalErrors = new ArrayList<>();
+
     }
 
     public void classifyLexemes(ArrayList<String> lexemes) {
         Register tableRegister;
         Language language = new Language();
-        String previusLexeme="";
+        boolean dataTypeFound = false;
+        String dataTypeLex = "";
         for (String lexeme : lexemes) {
             String lexWithOutLineNumber= removeLineNumberFromLexeme(lexeme);
             //1. Verify if the lexeme belongs to some element defined in the language
@@ -51,27 +53,38 @@ public class LexicalAnalyzer {
                             lexWithOutLineNumber, getLineNumberOfLexeme(lexeme)));
                 } else {
                     if(tableRegister.getCategory().equals("ID")) {
-                      switch (previusLexeme) {
-                          case "int":
-                              tableRegister.setType("integer");
-                              break;
-                          case "flt":
-                              tableRegister.setType("float");
-                              break;
-                          case "str":
-                              tableRegister.setType("string");
-                              break;
-                          case "bln":
-                              tableRegister.setType("boolean");
-                              break;
-                          default:
-                              break;
-                      }
+                        if(dataTypeFound) {
+                            switch (dataTypeLex) {
+                                case "int":
+                                    tableRegister.setType("integer");
+                                    tableRegister.setLength(4);
+                                    break;
+                                case "flt":
+                                    tableRegister.setType("float");
+                                    tableRegister.setLength(8);
+                                    break;
+                                case "str":
+                                    tableRegister.setType("string");
+                                    tableRegister.setLength(50);
+                                    break;
+                                case "bln":
+                                    tableRegister.setType("boolean");
+                                    tableRegister.setLength(1);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
                     }
                     symbolTable.insertData(tableRegister);
                 }
             }
-            previusLexeme = lexWithOutLineNumber;
+            if(lexWithOutLineNumber.equals("int") || lexWithOutLineNumber.equals("flt") ||
+               lexWithOutLineNumber.equals("str") || lexWithOutLineNumber.equals("bln")) {
+                dataTypeFound = true;
+                dataTypeLex =lexWithOutLineNumber;
+            }
+            if(lexWithOutLineNumber.equals(";")) { dataTypeFound = false; }
         }
     }
 

@@ -41,6 +41,8 @@ public class Language {
         reserved_words.add("not");
         reserved_words.add("open>");
         reserved_words.add("<close");
+        reserved_words.add("true");
+        reserved_words.add("false");
     }
 
     private void setDelimiters() {

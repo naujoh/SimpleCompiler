@@ -3,11 +3,10 @@ package summer.laii.SymbolTable;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.ArrayList;
 
 public class Table {
     private RandomAccessFile symbolTable, indexFile;
-    private String sybolTableFilePath = "symbol_table", indexFilePath = "indexes";
+    private String symbolTableFilePath = "symbol_table", indexFilePath = "indexes";
     private HashTable hashTable;
 
     //Tokens categories
@@ -20,7 +19,7 @@ public class Table {
 
     public Table() {
         try {
-            File table = new File(sybolTableFilePath);
+            File table = new File(symbolTableFilePath);
             File index = new File(indexFilePath);
             table.delete();
             table.createNewFile();
@@ -48,9 +47,7 @@ public class Table {
                 symbolTable.writeInt(register.getLength());
                 symbolTable.writeChars(register.getValue());
                 symbolTable.writeChars(register.getCategory());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            } catch (IOException e) { e.printStackTrace(); }
         }
     }
 
@@ -62,7 +59,7 @@ public class Table {
                 if(index==indexFile.readLong()) {
                     symbolTable.seek(index*Register.reg_long);
                     symbolTable.readLong();
-                    if(token.equals(readString(25))){  keyExist=true; }
+                    if(token.equals(readString(25))){ keyExist=true; }
                     break;
                 }
             }
@@ -72,7 +69,7 @@ public class Table {
 
     /** Get data from a register of the symbol table
      *
-     * @param token to find register positon in symbol table
+     * @param token to find register position in symbol table
      * @return reg object with found data from symbol table
      */
     public Register getData(String token) {
@@ -94,19 +91,17 @@ public class Table {
     }
 
     public String readDataFromTable() {
-        //String dataTable = String.format("%-50s %-10s %8s %15s %3s","TOKEN", "TIPO_DATO", "LONGITUD", "VALOR", "CAT");
         String dataTable = "  TOKEN\tTIPO_DATO\tLONGITUD\tVALOR\tCAT\n";
         dataTable += "=======================================================\n\n";
-        //String dataTable = "";
         try {
             indexFile.seek(0);
             while (indexFile.getFilePointer() < indexFile.length()) {
                 symbolTable.seek(indexFile.readLong()*Register.reg_long);
                 symbolTable.readLong();
                 dataTable += String.format("  %s \t", readString(25).trim()); //token
-                dataTable += String.format("  %s\t",readString(10).trim()); //datatype
-                dataTable += String.format("  %s\t",symbolTable.readInt()); //length
-                dataTable += String.format("  %s\t",readString(50).trim()); //value
+                dataTable += String.format("  %s \t",readString(10).trim()); //data type
+                dataTable += String.format("  %s \t",symbolTable.readInt()); //length
+                dataTable += String.format("  %s \t",readString(50).trim()); //value
                 dataTable += String.format("  %s",readString(2).trim()) + "\n"; //category
             }
         } catch (IOException e) { e.printStackTrace(); }
