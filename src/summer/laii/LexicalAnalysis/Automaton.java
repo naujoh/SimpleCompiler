@@ -98,6 +98,7 @@ public class Automaton {
             register.setToken(lexeme);
             register.setType("");
             register.setLength(0);
+            register.setConstant("");
             register.setValue("");
             register.setCategory(Table.IDENTIFIER);
         } else {
@@ -113,6 +114,7 @@ public class Automaton {
                     register.setType("floating");
                     register.setLength(8);
                 }
+                register.setConstant("");
                 register.setValue("");
                 register.setCategory(Table.DIGIT);
             } else {
@@ -123,6 +125,7 @@ public class Automaton {
                     register.setToken(lexeme);
                     register.setType("string");
                     register.setLength(50);
+                    register.setConstant("");
                     register.setValue("");
                     register.setCategory(Table.STRING);
                 }

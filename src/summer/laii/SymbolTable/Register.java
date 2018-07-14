@@ -5,10 +5,11 @@ public class Register {
     private String token; //char[25] = 50 bytes
     private String type; //char[10] = 20 bytes
     private int length; // 4 bytes
+    private String constant; //char[5] = 10bytes
     private String value; //char[50] = 100 bytes
     private String category; //char[2] = 4 bytes
 
-    public static int reg_long = Long.BYTES + 87*Character.BYTES + Integer.BYTES;
+    public static int reg_long = Long.BYTES + 92*Character.BYTES + Integer.BYTES;
 
     public Register() { }
 
@@ -59,6 +60,10 @@ public class Register {
     public void setCategory(String category) {
         this.category = adjustCharacterSize(category, 2);
     }
+
+    public String getConstant() { return constant; }
+
+    public void setConstant(String constant) { this.constant = adjustCharacterSize(constant, 5); }
 
     private String adjustCharacterSize(String value, int size) {
         StringBuffer stringBuffer = new StringBuffer(value);

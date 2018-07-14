@@ -45,6 +45,7 @@ public class Table {
                 symbolTable.writeChars(register.getToken());
                 symbolTable.writeChars(register.getType());
                 symbolTable.writeInt(register.getLength());
+                symbolTable.writeChars(register.getConstant());
                 symbolTable.writeChars(register.getValue());
                 symbolTable.writeChars(register.getCategory());
             } catch (IOException e) { e.printStackTrace(); }
@@ -82,6 +83,7 @@ public class Table {
             reg.setToken(readString(25).trim());
             reg.setType(readString(10).trim());
             reg.setLength(symbolTable.readInt());
+            reg.setConstant(readString(5).trim());
             reg.setValue(readString(50).trim());
             reg.setCategory(readString(2).trim());
         } catch (IOException e) { e.printStackTrace(); }
@@ -91,16 +93,17 @@ public class Table {
     }
 
     public String readDataFromTable() {
-        String dataTable = "  TOKEN\tTIPO_DATO\tLONGITUD\tVALOR\tCAT\n";
-        dataTable += "=======================================================\n\n";
+        String dataTable = "  TOKEN\tTIPO_DATO\tLONGITUD\tCONSTANTE\tVALOR\tCAT\n";
+        dataTable += "===================================================================\n\n";
         try {
             indexFile.seek(0);
             while (indexFile.getFilePointer() < indexFile.length()) {
                 symbolTable.seek(indexFile.readLong()*Register.reg_long);
                 symbolTable.readLong();
                 dataTable += String.format("  %s \t", readString(25).trim()); //token
-                dataTable += String.format("  %s \t",readString(10).trim()); //data type
-                dataTable += String.format("  %s \t",symbolTable.readInt()); //length
+                dataTable += String.format("  %s \t", readString(10).trim()); //data type
+                dataTable += String.format("  %s \t", symbolTable.readInt()); //length
+                dataTable += String.format(" %s \t", readString(5).trim()); //constant
                 dataTable += String.format("  %s \t",readString(50).trim()); //value
                 dataTable += String.format("  %s",readString(2).trim()) + "\n"; //category
             }

@@ -21,7 +21,7 @@ public class LexicalAnalyzer {
     public void classifyLexemes(ArrayList<String> lexemes) {
         Register tableRegister;
         Language language = new Language();
-        boolean dataTypeFound = false;
+        boolean dataTypeFound = false, constantDefinition = false;
         String dataTypeLex = "";
         for (String lexeme : lexemes) {
             String lexWithOutLineNumber= removeLineNumberFromLexeme(lexeme);
@@ -30,6 +30,7 @@ public class LexicalAnalyzer {
             tableRegister.setType("");
             tableRegister.setLength(0);
             tableRegister.setValue("");
+            tableRegister.setConstant("");
             if(language.getReserved_words().contains(lexWithOutLineNumber)) {
                 tableRegister.setToken(lexWithOutLineNumber);
                 tableRegister.setCategory(Table.RESERVEDWORD);
@@ -53,6 +54,11 @@ public class LexicalAnalyzer {
                             lexWithOutLineNumber, getLineNumberOfLexeme(lexeme)));
                 } else {
                     if(tableRegister.getCategory().equals("ID")) {
+                        if(constantDefinition)
+                            tableRegister.setConstant("const");
+                        else
+                            tableRegister.setConstant("var");
+
                         if(dataTypeFound) {
                             switch (dataTypeLex) {
                                 case "int":
@@ -79,12 +85,13 @@ public class LexicalAnalyzer {
                     symbolTable.insertData(tableRegister);
                 }
             }
+            if(lexWithOutLineNumber.equals("def")) { constantDefinition = true; }
             if(lexWithOutLineNumber.equals("int") || lexWithOutLineNumber.equals("flt") ||
                lexWithOutLineNumber.equals("str") || lexWithOutLineNumber.equals("bln")) {
                 dataTypeFound = true;
                 dataTypeLex =lexWithOutLineNumber;
             }
-            if(lexWithOutLineNumber.equals(";")) { dataTypeFound = false; }
+            if(lexWithOutLineNumber.equals(";")) { dataTypeFound = false; constantDefinition = false;}
         }
     }
 
@@ -146,6 +153,6 @@ public class LexicalAnalyzer {
         for(String s : lexicalErrors) {
             errors+=s+"\n";
         }
-        return errors;
+         return errors;
     }
 }
