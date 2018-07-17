@@ -10,7 +10,7 @@ package summer.laii.GUI;
  * @author eric-apk
  */
 
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -31,7 +31,6 @@ import javax.swing.JTextArea;
 
 import summer.laii.LexicalAnalysis.LexicalAnalyzer;
 import summer.laii.LexicalAnalysis.Preprocessor;
-import summer.laii.SyntacticAnalysis.SyntacticAnalyzer;
 
 public class GUI extends JFrame implements KeyListener, ActionListener{
 
@@ -39,9 +38,9 @@ public class GUI extends JFrame implements KeyListener, ActionListener{
     JMenuBar menu;
     JMenu archivo, analisis;
     JMenuItem nuevo, abrir, guardar, salir, lexico, sintactico, semantico;
-    JPanel pCodigo, pSalida, pMostrar, pBoton, pPrincipal, pAuxiliar;
-    JTextArea taNumero, taLinea, taSalida, taMostrar;
-    JScrollPane spCodigo, spMostrar, spErrores;
+    JPanel pCodigo, pSalida, pMostrar, pBoton, pPrincipal, pAuxiliar, pTrasa, pTas;
+    JTextArea taNumero, taLinea, taSalida, taMostrar, taTrasa, taTas;
+    JScrollPane spCodigo, spMostrar, spErrores, spTrasa, spTas;
     private JButton bCerrar;
     JFileChooser fileChooser;
     File file;
@@ -69,14 +68,14 @@ public class GUI extends JFrame implements KeyListener, ActionListener{
     public void setMenu(){
         menu=new JMenuBar();
         //Componentes de la barra de menu
+        nuevo=new JMenuItem("Nuevo");
+        abrir=new JMenuItem("Abrir");
+        guardar=new JMenuItem("Guardar");
         archivo=new JMenu("Archivo");
         analisis=new JMenu("Análisis");
         //Items - menu archivo
-        nuevo=new JMenuItem("Nuevo", new ImageIcon("Nuevo.png"));
         nuevo.addActionListener(this);
-        abrir=new JMenuItem("Abrir", new ImageIcon("Abrir.png"));
         abrir.addActionListener(this);
-        guardar=new JMenuItem("Guardar", new ImageIcon("Guardar1.png"));
         guardar.addActionListener(this);
         salir=new JMenuItem("Salir");
         salir.addActionListener(this);
@@ -106,26 +105,33 @@ public class GUI extends JFrame implements KeyListener, ActionListener{
      * Intanciar los elementos que conforman el panel principal
      */
     public void setPanelPrincipal(){
-                pPrincipal=new JPanel();
+        pPrincipal=new JPanel();
         pCodigo=new JPanel();
         pSalida=new JPanel();
+        pTrasa=new JPanel();
 
         taNumero=new JTextArea(30, 3);
         taNumero.append(numeroLinea+"");
         taNumero.setEditable(false);
-        taLinea=new JTextArea(30, 50);
+        taLinea=new JTextArea(30, 70);
         taLinea.addKeyListener(this);
-        taSalida=new JTextArea(4, 54);
+        taSalida=new JTextArea(4, 74);
         taSalida.setEditable(false);
+        taTrasa=new JTextArea(15, 74);
+        taTrasa.setEditable(false);
         spCodigo=new JScrollPane(pCodigo);
         spErrores=new JScrollPane(pSalida);
+        spTrasa=new JScrollPane(pTrasa);
         //Se agregan los componentes al panel principal
         pCodigo.add(taNumero);
         pCodigo.add(taLinea);
         pSalida.add(taSalida);
+        pTrasa.add(taTrasa);
+        //pSalida.add(taTrasa);
         pPrincipal.setLayout(new BorderLayout());
-        pPrincipal.add(spCodigo, BorderLayout.CENTER);
-        pPrincipal.add(spErrores, BorderLayout.SOUTH);
+        pPrincipal.add(spCodigo, BorderLayout.NORTH);
+        pPrincipal.add(spErrores, BorderLayout.CENTER);
+        pPrincipal.add(spTrasa, BorderLayout.SOUTH);
     }
     
     /**
@@ -135,25 +141,29 @@ public class GUI extends JFrame implements KeyListener, ActionListener{
         /**
          * INSTANCIA DE LOS PANELES
          */
+        pTas=new JPanel();
         pMostrar=new JPanel();
         pBoton=new JPanel();
         pAuxiliar=new JPanel();
         /**
          * INSTANCIA DE LOS TEXTAREA Y EL SRCOLLPANE
          */
-        taMostrar=new JTextArea(30, 78);
-        taMostrar.setFont(new Font("monospaced", Font.PLAIN, 12));
+        taMostrar=new JTextArea(25, 45);
         taMostrar.setEditable(false);
-        bCerrar=new JButton("Cerrar");
+        taTas=new JTextArea(15, 45);
+        taTas.setEditable(false);bCerrar=new JButton("Cerrar");
         bCerrar.addActionListener(this);
         spMostrar=new JScrollPane(taMostrar);
+        spTas=new JScrollPane(taTas);
         /**
          * SE AGREGAN LOS COMPONENTES AL PANEL AUXILIAR
          */
         pMostrar.add(spMostrar);
         pBoton.add(bCerrar);
+        pTas.add(taTas);
         pAuxiliar.setLayout(new BorderLayout());
-        pAuxiliar.add(pMostrar, BorderLayout.CENTER);
+        pAuxiliar.add(pMostrar, BorderLayout.NORTH);
+        pAuxiliar.add(pTas, BorderLayout.CENTER);
         pAuxiliar.add(pBoton, BorderLayout.SOUTH);
     }
     
@@ -316,14 +326,7 @@ public class GUI extends JFrame implements KeyListener, ActionListener{
             LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer();
             lexicalAnalyzer.classifyLexemes(listaLexemas);
             textoAuxiliar = lexicalAnalyzer.getSymbolTable().readDataFromTable();
-            taSalida.setText(lexicalAnalyzer.getFoundErrors());
-            SyntacticAnalyzer syntacticAnalyzer = new SyntacticAnalyzer(lexicalAnalyzer.getSymbolTable().getSourceCode());
-            syntacticAnalyzer.printSintacticTable();
-            syntacticAnalyzer.analyze();
-            String errors = taSalida.getText();
-            errors += syntacticAnalyzer.getErrors();
-            taSalida.setText(errors);
-            System.out.println(syntacticAnalyzer.getStackTransition());
+            taSalida.setText(lexicalAnalyzer.getErrorsFound());
             add(pAuxiliar,BorderLayout.EAST);
             String algo=taLinea.getText();
             taLinea.setText("");
