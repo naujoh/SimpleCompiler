@@ -8,6 +8,7 @@ public class Register {
     private String constant; //char[5] = 10bytes
     private String value; //char[50] = 100 bytes
     private String category; //char[2] = 4 bytes
+    private String lineNumber;
 
     public static int reg_long = Long.BYTES + 92*Character.BYTES + Integer.BYTES;
 
@@ -64,6 +65,10 @@ public class Register {
     public String getConstant() { return constant; }
 
     public void setConstant(String constant) { this.constant = adjustCharacterSize(constant, 5); }
+
+    public void setLineNumber(String lineNumber) { this.lineNumber=lineNumber; }
+
+    public String getLineNumber() { return lineNumber; }
 
     private String adjustCharacterSize(String value, int size) {
         StringBuffer stringBuffer = new StringBuffer(value);

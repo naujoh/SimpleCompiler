@@ -10,7 +10,7 @@ package summer.laii.GUI;
  * @author eric-apk
  */
 
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -31,6 +31,7 @@ import javax.swing.JTextArea;
 
 import summer.laii.LexicalAnalysis.LexicalAnalyzer;
 import summer.laii.LexicalAnalysis.Preprocessor;
+import summer.laii.SyntacticAnalysis.SyntacticAnalyzer;
 
 public class GUI extends JFrame implements KeyListener, ActionListener{
 
@@ -112,9 +113,9 @@ public class GUI extends JFrame implements KeyListener, ActionListener{
         taNumero=new JTextArea(30, 3);
         taNumero.append(numeroLinea+"");
         taNumero.setEditable(false);
-        taLinea=new JTextArea(30, 70);
+        taLinea=new JTextArea(30, 50);
         taLinea.addKeyListener(this);
-        taSalida=new JTextArea(4, 74);
+        taSalida=new JTextArea(4, 54);
         taSalida.setEditable(false);
         spCodigo=new JScrollPane(pCodigo);
         spErrores=new JScrollPane(pSalida);
@@ -140,7 +141,8 @@ public class GUI extends JFrame implements KeyListener, ActionListener{
         /**
          * INSTANCIA DE LOS TEXTAREA Y EL SRCOLLPANE
          */
-        taMostrar=new JTextArea(30, 45);
+        taMostrar=new JTextArea(30, 78);
+        taMostrar.setFont(new Font("monospaced", Font.PLAIN, 12));
         taMostrar.setEditable(false);
         bCerrar=new JButton("Cerrar");
         bCerrar.addActionListener(this);
@@ -314,7 +316,14 @@ public class GUI extends JFrame implements KeyListener, ActionListener{
             LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer();
             lexicalAnalyzer.classifyLexemes(listaLexemas);
             textoAuxiliar = lexicalAnalyzer.getSymbolTable().readDataFromTable();
-            taSalida.setText(lexicalAnalyzer.getErrorsFound());
+            taSalida.setText(lexicalAnalyzer.getFoundErrors());
+            SyntacticAnalyzer syntacticAnalyzer = new SyntacticAnalyzer(lexicalAnalyzer.getSymbolTable().getSourceCode());
+            syntacticAnalyzer.printSintacticTable();
+            syntacticAnalyzer.analyze();
+            String errors = taSalida.getText();
+            errors += syntacticAnalyzer.getErrors();
+            taSalida.setText(errors);
+            System.out.println(syntacticAnalyzer.getStackTransition());
             add(pAuxiliar,BorderLayout.EAST);
             String algo=taLinea.getText();
             taLinea.setText("");

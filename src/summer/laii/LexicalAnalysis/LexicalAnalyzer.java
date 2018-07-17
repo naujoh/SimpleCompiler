@@ -34,14 +34,17 @@ public class LexicalAnalyzer {
             if(language.getReserved_words().contains(lexWithOutLineNumber)) {
                 tableRegister.setToken(lexWithOutLineNumber);
                 tableRegister.setCategory(Table.RESERVEDWORD);
+                tableRegister.setLineNumber(getLineNumberOfLexeme(lexeme));
                 symbolTable.insertData(tableRegister);
             } else if (language.getDelimiters().contains(lexWithOutLineNumber)) {
                 tableRegister.setToken(lexWithOutLineNumber);
                 tableRegister.setCategory(Table.DELIMITER);
+                tableRegister.setLineNumber(getLineNumberOfLexeme(lexeme));
                 symbolTable.insertData(tableRegister);
             } else if (language.getOperators().contains(lexWithOutLineNumber)) {
                 tableRegister.setToken(lexWithOutLineNumber);
                 tableRegister.setCategory(Table.OPERATOR);
+                tableRegister.setLineNumber(getLineNumberOfLexeme(lexeme));
                 symbolTable.insertData(tableRegister);
             }
             //2. If not then verify if the lexeme could be recognized by the automatons
@@ -82,6 +85,7 @@ public class LexicalAnalyzer {
                             }
                         }
                     }
+                    tableRegister.setLineNumber(getLineNumberOfLexeme(lexeme));
                     symbolTable.insertData(tableRegister);
                 }
             }
@@ -148,7 +152,7 @@ public class LexicalAnalyzer {
         return symbolTable;
     }
 
-    public String getErrorsFound() {
+    public String getFoundErrors() {
         String errors = "";
         for(String s : lexicalErrors) {
             errors+=s+"\n";

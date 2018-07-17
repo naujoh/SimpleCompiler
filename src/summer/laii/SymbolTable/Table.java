@@ -3,11 +3,13 @@ package summer.laii.SymbolTable;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 
 public class Table {
     private RandomAccessFile symbolTable, indexFile;
     private String symbolTableFilePath = "symbol_table", indexFilePath = "indexes";
     private HashTable hashTable;
+    private ArrayList<Register> sourceCode;
 
     //Tokens categories
     public static final String RESERVEDWORD = "PR";
@@ -29,6 +31,7 @@ public class Table {
             indexFile = new RandomAccessFile(index, "rw");
         } catch (IOException e) { e.printStackTrace(); }
         hashTable = new HashTable();
+        sourceCode = new ArrayList<>();
     }
 
     /** Insert a register to symbol table
@@ -50,6 +53,7 @@ public class Table {
                 symbolTable.writeChars(register.getCategory());
             } catch (IOException e) { e.printStackTrace(); }
         }
+        sourceCode.add(register);
     }
 
     private boolean keyExist(long index, String token) {
@@ -93,21 +97,23 @@ public class Table {
     }
 
     public String readDataFromTable() {
-        String dataTable = "  TOKEN\tTIPO_DATO\tLONGITUD\tCONSTANTE\tVALOR\tCAT\n";
-        dataTable += "===================================================================\n\n";
+        String dataTable = String.format("%-25s %-15s %-6s %-12s %-5s %-3s \n\n",
+                "TOKEN", "TIPO DATO", "LONG", "CONSTANTE", "VALOR", "CAT");
+
         try {
             indexFile.seek(0);
             while (indexFile.getFilePointer() < indexFile.length()) {
                 symbolTable.seek(indexFile.readLong()*Register.reg_long);
                 symbolTable.readLong();
-                dataTable += String.format("  %s \t", readString(25).trim()); //token
-                dataTable += String.format("  %s \t", readString(10).trim()); //data type
-                dataTable += String.format("  %s \t", symbolTable.readInt()); //length
-                dataTable += String.format(" %s \t", readString(5).trim()); //constant
-                dataTable += String.format("  %s \t",readString(50).trim()); //value
-                dataTable += String.format("  %s",readString(2).trim()) + "\n"; //category
+                dataTable += String.format("%-25s ", readString(25).trim()); //token
+                dataTable += String.format("%-15s ", readString(10).trim()); //data type
+                dataTable += String.format("%-6s ", symbolTable.readInt()); //length
+                dataTable += String.format("%-12s ", readString(5).trim()); //constant
+                dataTable += String.format("%-5s ",readString(50).trim()); //value
+                dataTable += String.format("%-3s \n",readString(2).trim()); //category
             }
         } catch (IOException e) { e.printStackTrace(); }
+        System.out.println(dataTable);
         return dataTable;
     }
 
@@ -124,5 +130,7 @@ public class Table {
         }
         return String.valueOf(result);
     }
+
+    public ArrayList<Register> getSourceCode() { return sourceCode; }
 
 }
