@@ -152,7 +152,7 @@ public class LexicalAnalyzer {
         return symbolTable;
     }
 
-    public String getFoundErrors() {
+    public String getErrorsFound() {
         String errors = "";
         for(String s : lexicalErrors) {
             errors+=s+"\n";

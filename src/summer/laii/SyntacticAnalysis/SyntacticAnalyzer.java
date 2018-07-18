@@ -25,7 +25,7 @@ public class SyntacticAnalyzer {
         errors = "";
     }
 
-    public void printSintacticTable() {
+    public String printSintacticTable() {
         String rule = "", terminals = "", output = String.format("%-70s %-50s \n\n","REGLAS DE PRODUCCION", "TERMINALES");
         for(GramaticRule g : syntacticAnalisisTable.getTable()) {
             for(RightSide r : g.getRightSides()) {
@@ -40,7 +40,7 @@ public class SyntacticAnalyzer {
                 terminals = "";
             }
         }
-        System.out.println(output);
+        return output;
     }
 
     public void analyze() {

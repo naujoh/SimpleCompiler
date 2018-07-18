@@ -97,7 +97,7 @@ public class Table {
     }
 
     public String readDataFromTable() {
-        String dataTable = String.format("%-25s %-15s %-6s %-12s %-5s %-3s \n\n",
+        String dataTable = String.format("%-25s %-15s %-6s %-12s %-10s %-3s \n\n",
                 "TOKEN", "TIPO DATO", "LONG", "CONSTANTE", "VALOR", "CAT");
 
         try {
@@ -109,11 +109,10 @@ public class Table {
                 dataTable += String.format("%-15s ", readString(10).trim()); //data type
                 dataTable += String.format("%-6s ", symbolTable.readInt()); //length
                 dataTable += String.format("%-12s ", readString(5).trim()); //constant
-                dataTable += String.format("%-5s ",readString(50).trim()); //value
+                dataTable += String.format("%-10s ",readString(50).trim()); //value
                 dataTable += String.format("%-3s \n",readString(2).trim()); //category
             }
         } catch (IOException e) { e.printStackTrace(); }
-        System.out.println(dataTable);
         return dataTable;
     }
 
