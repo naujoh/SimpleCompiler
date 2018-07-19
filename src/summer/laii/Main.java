@@ -9,6 +9,7 @@ public class Main {
     public static void main(String[] args) {
         Gui gui = new Gui();
         gui.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        System.out.println("Test: ");
     }
 }
 
