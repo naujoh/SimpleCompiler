@@ -102,9 +102,8 @@ public class Gui extends JFrame implements KeyListener, ActionListener {
 
     private void countRows() {
         taLineNumber.setText("1");
-        for(int i=2; i<=taSourceCode.getLineCount(); i++) {
-            taLineNumber.setText(taLineNumber.getText()+"\n"+i);
-        }
+        int lineCount = taSourceCode.getLineCount();
+        for(int i=2; i<=lineCount; i++) { taLineNumber.setText(taLineNumber.getText()+"\n"+i); }
     }
 
     private void openFile() {
@@ -136,7 +135,7 @@ public class Gui extends JFrame implements KeyListener, ActionListener {
         String errors;
         syntacticAnalyzer = new SyntacticAnalyzer(lexicalAnalyzer.getSymbolTable().getSourceCode());
         taSyntacticTable.setText("");
-        taSyntacticTable.setText(syntacticAnalyzer.printSintacticTable());
+        taSyntacticTable.setText(syntacticAnalyzer.printSyntacticTable());
         syntacticAnalyzer.analyze();
         errors = taErrors.getText() + syntacticAnalyzer.getErrors();
         taErrors.setText(errors);

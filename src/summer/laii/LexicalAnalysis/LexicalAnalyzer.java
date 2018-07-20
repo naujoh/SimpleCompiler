@@ -18,6 +18,10 @@ public class LexicalAnalyzer {
 
     }
 
+    /** Method that going to try to classify the lexemes to add them to symbol table
+     *
+     * @param lexemes of the source code that going to be recognized
+     */
     public void classifyLexemes(ArrayList<String> lexemes) {
         Register tableRegister;
         Language language = new Language();
@@ -61,7 +65,6 @@ public class LexicalAnalyzer {
                             tableRegister.setConstant("const");
                         else
                             tableRegister.setConstant("var");
-
                         if(dataTypeFound) {
                             switch (dataTypeLex) {
                                 case "int":

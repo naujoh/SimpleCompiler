@@ -30,6 +30,15 @@ public class Automaton {
         nextStates = new ArrayList<>();
     }
 
+    /** Automaton structure
+     *
+     * [
+     *  {sourceState, [{numberSate, [transition_elements], isFinal}, {numberSate, [transition_elements], isFinal}, ...]}
+     *  {sourceState, [{numberSate, [transition_elements], isFinal}]}
+     *  ...
+     * ]
+     */
+
     public void createIdentifiersAutomaton() {
         identifiersAutomaton = new ArrayList<>();
         Automaton automatonElements = new Automaton();
@@ -89,6 +98,11 @@ public class Automaton {
         stringAutomaton.add(automatonElements);
     }
 
+    /** Recognize if a string is an element of the language
+     *
+     * @param lexeme is the element to be recognized by automatons
+     * @return Register object that going to be saved in the symbol table
+     */
     public Register recognizeLexeme(String lexeme) {
         Register register = null;
         State resultingState = goThroughAutomaton(identifiersAutomaton, lexeme);
@@ -134,6 +148,12 @@ public class Automaton {
         return register;
     }
 
+    /** Reads each element of the lexeme (input string) and checks if an automaton could recognized it
+     *
+     * @param automaton it is the automaton with which one tries to recognized the input string
+     * @param lexeme
+     * @return
+     */
     private State goThroughAutomaton (ArrayList<Automaton> automaton, String lexeme) {
         int lexemePointer = 0;
         State currentState = new State(0, false);
@@ -146,13 +166,13 @@ public class Automaton {
         return currentState;
     }
 
-    /** Automaton structure
+    /** Obtains the next state of an automaton by passing it a current state
+     *  and an element of the lexeme that is being recognized
      *
-     * [
-     *  {sourceState, [{numberSate, [transition_elements], isFinal}, {numberSate, [transition_elements], isFinal}, ...]}
-     *  {sourceState, [{numberSate, [transition_elements], isFinal}]}
-     *  ...
-     * ]
+     * @param currentStateNumber is the current state where is located the automaton
+     * @param lexemeChar is the current element of a lexeme that is being recognized
+     * @param automaton is the automaton used to recognized the lexeme
+     * @return a State object that represents the next state to which the automaton has to pass
      */
 
     private State getNextState(int currentStateNumber, String lexemeChar, ArrayList<Automaton> automaton) {

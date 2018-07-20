@@ -37,7 +37,7 @@ public class Preprocessor {
 
     /** Obtain list of lexemes identified in source code with his line number attached
      *
-     * @return an arraylist with the identified lexemes
+     * @return a list with the identified lexemes
      */
 
     public ArrayList<String> getLexemes() {
@@ -173,8 +173,5 @@ public class Preprocessor {
 
     public void setFileContent (String data) {
         this.fileContent = data;
-    }
-    public void fileContent(String fileContent) {
-        this.fileContent=fileContent;
     }
 }
